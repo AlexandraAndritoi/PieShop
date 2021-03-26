@@ -44,6 +44,8 @@ namespace PieShop
 
             // images, JavaScript files, CSS files; searches in wwwroot
             app.UseStaticFiles();
+
+            // enabled MVC routing in our application
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
