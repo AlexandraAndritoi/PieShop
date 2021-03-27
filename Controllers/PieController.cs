@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PieShop.Models;
 using PieShop.ViewModels;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PieShop.Controllers
 {
@@ -15,13 +17,27 @@ namespace PieShop.Controllers
             this.categoryRepository = categoryRepository;
         }
 
-        public ViewResult List()
+        public ViewResult List(string category)
         {
-            var piesListViewModel = new PiesListViewModel();
-            piesListViewModel.Pies = pieRepository.AllPies;
-            piesListViewModel.CurrentCategory = "Cheese cake";
+            IEnumerable<Pie> pies;
+            string currentCategory;
 
-            return View(piesListViewModel);
+            if (string.IsNullOrEmpty(category))
+            {
+                pies = pieRepository.AllPies.OrderBy(p => p.PieId);
+                currentCategory = "All pies";
+            }
+            else
+            {
+                pies = pieRepository.AllPies.Where(p => p.Category.CategoryName == category).OrderBy(p => p.PieId);
+                currentCategory = categoryRepository.AllCategories.FirstOrDefault(c => c.CategoryName == category)?.CategoryName;
+            }
+
+            return View(new PiesListViewModel
+            {
+                Pies = pies,
+                CurrentCategory = currentCategory
+            });
         }
 
         public IActionResult Details(int id)
