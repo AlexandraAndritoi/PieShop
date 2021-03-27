@@ -1,10 +1,10 @@
+using PieShop.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PieShop.Models;
 
 namespace PieShop
 {
@@ -27,8 +27,14 @@ namespace PieShop
             // EF Core support
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            // session support
+            services.AddHttpContextAccessor();
+            services.AddSession();
+
             services.AddScoped<IPieRepository, PieRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+            services.AddScoped(serviceProvider => ShoppingCart.GetCart(serviceProvider));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +50,8 @@ namespace PieShop
 
             // images, JavaScript files, CSS files; searches in wwwroot
             app.UseStaticFiles();
+
+            app.UseSession();
 
             // enabled MVC routing in our application
             app.UseRouting();

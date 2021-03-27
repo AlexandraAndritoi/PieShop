@@ -23,8 +23,12 @@
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
+                    <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+                </ul>
+                <ul class="nav navbar-nav">
                     <li><a asp-controller="Pie" asp-action="List">Pies</a></li>
                 </ul>
+                @await Component.InvokeAsync("ShoppingCartSummary")
             </div>
         </div>
     </nav>
