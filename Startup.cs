@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Identity;
 
 namespace PieShop
 {
@@ -24,8 +25,17 @@ namespace PieShop
             // MVC support
             services.AddControllersWithViews();
 
+            // Razor pages support
+            services.AddRazorPages();
+
             // EF Core support
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            
+            // basic functionality for working with Identity in the application
+            services.AddDefaultIdentity<IdentityUser>()
+                // indicates that Identity needs to use Entity Framework to store its data
+                // and is going to use AppDbContext which inherits from IdentityDbContext
+                .AddEntityFrameworkStores<AppDbContext>();
 
             // session support
             services.AddHttpContextAccessor();
@@ -57,9 +67,15 @@ namespace PieShop
             // enabled MVC routing in our application
             app.UseRouting();
 
+            // enabled ASP.NET Core Identity
+            app.UseAuthentication();
+
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
         }
     }
